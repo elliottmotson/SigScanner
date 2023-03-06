@@ -18,6 +18,12 @@ The aims of this program are to create a low-level C utlity to:
 
 ### Arguments:
 
+#### Scan single file
+
+```python3 sigscanner.py -scan [FILE]```
+
+https://github.com/elliottmotson/SigScanner/blob/master/screenshots/scan.png
+
 #### Scan all files in current directory
 
 ```python3 sigscanner.py -dirscan```
