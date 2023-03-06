@@ -179,7 +179,7 @@ if __name__ == '__main__':
         elif ((sys.argv[1]) == "-scan") and len(sys.argv) > 2:
             query_malware_bazaar(sys.argv[2])
         else:
-            print("Supply valid command line arguments")
+            print("Invalid command line arguments")
     else:
         print("Supply command line arguments")
 
