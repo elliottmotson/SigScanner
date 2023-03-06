@@ -22,7 +22,7 @@ The aims of this program are to create a low-level C utlity to:
 
 ```python3 sigscanner.py -scan [FILE]```
 
-https://github.com/elliottmotson/SigScanner/blob/master/screenshots/scan.png
+![scan](https://github.com/elliottmotson/SigScanner/blob/master/screenshots/scan.png)
 
 #### Scan all files in current directory
 
