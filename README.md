@@ -22,7 +22,10 @@ The aims of this program are to create a low-level C utlity to:
 
 ```python3 sigscanner.py -dirscan```
 
-![dirscan](https://raw.githubusercontent.com/elliottmotson/SigScanner/master/screenshots/dirscan.mp4?token=GHSAT0AAAAAAB7QODDMHMKXAOCA5UDNNTSWZAFRTHA)
+
+https://user-images.githubusercontent.com/78193700/223038492-568bd70a-1a8f-43d9-bc3b-70f58ee1ce74.mp4
+
+
 
 
 
