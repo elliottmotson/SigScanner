@@ -3,7 +3,7 @@ SigScanner is a lightweight malware hash matching utility for linux, taking adva
 
 #### The aims of this program:
 
-The aims of this program are to create a low-level C utlity to:
+The aims of this program are to create a Python utlity to:
 
     1  - Find a files SHA_256 hash
     2  - Compare the files hash to an online database
