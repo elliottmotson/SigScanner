@@ -1,0 +1,4 @@
+pysqlite3
+requests
+python-dotenv
+wheel
