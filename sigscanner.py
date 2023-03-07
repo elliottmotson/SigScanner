@@ -116,12 +116,24 @@ class database:
     def value_exists(self, field, value):
         db = database.connect(self)
         cursor = db.cursor()
-        insert = f"""SELECT * FROM {self.table.upper()}
-        WHERE {field.upper()} == {value.upper()};"""
+        insert = f"""SELECT IFF ( {field.upper()} == {value.upper()}, TRUE, FALSE ) * FROM {self.table.upper()};"""
         cursor.execute(insert)
         result = cursor.fetchall()
         print(result)
         
+    def hash_exists(self, field, value):
+        #return False
+        # Check hash exists in database
+        print("Checking database for duplicate hash")
+        db = database.connect(self)
+        cursor = db.cursor()
+        insert = cursor.execute("SELECT * FROM LOCAL_HASHES WHERE sha256_hash=?", (value,))
+        rows = cursor.fetchall()
+        for row in rows:
+            return True
+        return False
+
+
 def hash_file(filename):
     hash = hashlib.sha256()
     with open(filename, 'rb') as file:
@@ -133,10 +145,7 @@ def hash_file(filename):
     return hash.hexdigest()
 
 
-def query_malware_bazaar(filename):
-    if os.path.isdir(filename):
-        return False
-    sha_256_hash = hash_file(filename)
+def query_malware_bazaar(filename,sha_256_hash):
     data = {'query': 'get_info',
             'hash': sha_256_hash}
     response = requests.post(f"https://mb-api.abuse.ch/api/v1/", data = data)
@@ -169,6 +178,35 @@ def insert_file(filename,filedata):
     local_database.insert_query(filedata)
     return True
 
+def scan_file(filename):
+    sha_256_hash = hash_file(filename)
+    if local_database.hash_exists("sha256_hash",str(sha_256_hash)):
+        print(f"{COLOUR['BLUE']}Already in database, skipping{COLOUR['ENDC']}")
+    else:
+        query_malware_bazaar(filename,sha_256_hash)
+
+def current_dir_scan(target):
+    print("Scanning current directory")
+    arr_files = os.listdir(target)
+    for i in range(len(arr_files)):
+        print("Scanning file: "+arr_files[i])
+        if Path(arr_files[i]).is_dir():
+            print("Ignore directory: ", arr_files[i])
+        else:
+            scan_file(target+"/"+arr_files[i])
+    
+    
+def recursive_dir_scan():
+    for root, dirs, files in os.walk("./", topdown=False):
+        for filename in files:
+            print("Scanning file: " + os.path.join(root,filename))
+            scan_file(os.path.join(root,filename))    
+        for dirname in dirs:
+            print("Scanning directory: " + dirname)
+
+    
+
+
 
 # Main function
 if __name__ == '__main__':
@@ -181,12 +219,15 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         # Scan current directory
         if (sys.argv[1] == "-dirscan"):
-            arr_files = os.listdir('./')
-            for i in range(len(arr_files)):
-                query_malware_bazaar(arr_files[i])
+            # Check recursive flag
+            current_dir_scan("./")
+            if ((sys.argv[2]) == "-r") and len(sys.argv) >= 2:
+                recursive_dir_scan()
+
+            
         # Scan single file
         elif ((sys.argv[1]) == "-scan") and len(sys.argv) > 2:
-            query_malware_bazaar(sys.argv[2])
+            scan_file(sys.argv[2])
         else:
             print("Invalid command line arguments")
     else:
