@@ -180,25 +180,19 @@ def insert_file(filename,filedata):
 
 def scan_file(filename):
     sha_256_hash = hash_file(filename)
-    # TODO Check database for duplicate hashes
     if local_database.hash_exists("sha256_hash",str(sha_256_hash)):
-        print("Already in database, skipping")
+        print(f"{COLOUR['BLUE']}Already in database, skipping{COLOUR['ENDC']}")
     else:
         query_malware_bazaar(filename,sha_256_hash)
-    
-    
+
 def current_dir_scan(target):
-    path = pathlib.Path(target)
-    if target is None or "./":
-        print("Scanning directory: " + target)
-        arr_files = os.listdir('./')
-        for i in range(len(arr_files)):
-            scan_file(arr_files[i])
-    else:
-        print("Scanning directory: "+ target)
-        arr_files = os.listdir(target)
-        for i in range(len(arr_files)):
-            print("Scanning file: "+arr_files[i])
+    print("Scanning current directory")
+    arr_files = os.listdir(target)
+    for i in range(len(arr_files)):
+        print("Scanning file: "+arr_files[i])
+        if Path(arr_files[i]).is_dir():
+            print("Ignore directory: ", arr_files[i])
+        else:
             scan_file(target+"/"+arr_files[i])
     
     
@@ -206,8 +200,7 @@ def recursive_dir_scan():
     for root, dirs, files in os.walk("./", topdown=False):
         for filename in files:
             print("Scanning file: " + os.path.join(root,filename))
-            scan_file(os.path.join(root,filename))
-                
+            scan_file(os.path.join(root,filename))    
         for dirname in dirs:
             print("Scanning directory: " + dirname)
 
@@ -227,10 +220,10 @@ if __name__ == '__main__':
         # Scan current directory
         if (sys.argv[1] == "-dirscan"):
             # Check recursive flag
+            current_dir_scan("./")
             if ((sys.argv[2]) == "-r") and len(sys.argv) >= 2:
                 recursive_dir_scan()
-            else:
-                current_dir_scan()
+
             
         # Scan single file
         elif ((sys.argv[1]) == "-scan") and len(sys.argv) > 2:
