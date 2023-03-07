@@ -249,3 +249,8 @@ if __name__ == "__main__":
             print("Invalid command line arguments")
     else:
         print("Supply command line arguments")
+
+## TO DO: 
+#
+#   Change file executable status if categorised as malware
+#
