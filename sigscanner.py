@@ -116,16 +116,24 @@ class database:
     def value_exists(self, field, value):
         db = database.connect(self)
         cursor = db.cursor()
-        insert = f"""SELECT * FROM {self.table.upper()}
-        WHERE {field.upper()} == {value.upper()};"""
+        insert = f"""SELECT IFF ( {field.upper()} == {value.upper()}, TRUE, FALSE ) * FROM {self.table.upper()};"""
         cursor.execute(insert)
         result = cursor.fetchall()
         print(result)
         
     def hash_exists(self, field, value):
+        #return False
         # Check hash exists in database
         print("Checking database for duplicate hash")
-        
+        db = database.connect(self)
+        cursor = db.cursor()
+        insert = cursor.execute("SELECT * FROM LOCAL_HASHES WHERE sha256_hash=?", (value,))
+        rows = cursor.fetchall()
+        for row in rows:
+            return True
+        return False
+
+
 def hash_file(filename):
     hash = hashlib.sha256()
     with open(filename, 'rb') as file:
@@ -173,8 +181,10 @@ def insert_file(filename,filedata):
 def scan_file(filename):
     sha_256_hash = hash_file(filename)
     # TODO Check database for duplicate hashes
-    local_database.hash_exists()
-    query_malware_bazaar(filename,sha_256_hash)
+    if local_database.hash_exists("sha256_hash",str(sha_256_hash)):
+        print("Already in database, skipping")
+    else:
+        query_malware_bazaar(filename,sha_256_hash)
     
     
 def current_dir_scan(target):
@@ -197,9 +207,9 @@ def recursive_dir_scan():
         for filename in files:
             print("Scanning file: " + os.path.join(root,filename))
             scan_file(os.path.join(root,filename))
+                
         for dirname in dirs:
             print("Scanning directory: " + dirname)
-
 
     
 
