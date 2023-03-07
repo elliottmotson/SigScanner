@@ -113,7 +113,14 @@ class database:
         db.commit()
         print("Committed successfully")
         
-        
+    def value_exists(self, field, value):
+        db = database.connect(self)
+        cursor = db.cursor()
+        insert = f"""SELECT * FROM {self.table.upper()}
+        WHERE {field.upper()} == {value.upper()};"""
+        cursor.execute(insert)
+        result = cursor.fetchall()
+        print(result)
         
 def hash_file(filename):
     hash = hashlib.sha256()
@@ -157,6 +164,8 @@ def query_malware_bazaar(filename):
 
 
 def insert_file(filename,filedata):
+    print(filedata)
+    #local_database.value_exists("sha256_hash",filedata['file_hash'])
     local_database.insert_query(filedata)
     return True
 
