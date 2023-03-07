@@ -32,6 +32,9 @@ The aims of this program are to create a Python utlity to:
 https://user-images.githubusercontent.com/78193700/223038492-568bd70a-1a8f-43d9-bc3b-70f58ee1ce74.mp4
 
 
+#### Recursively scan all files in current directory
+
+```python3 sigscanner.py -dirscan -r```
 
 
 
